@@ -20,10 +20,11 @@ yarn build
 yarn lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+[//]: # (### Customize configuration)
+
+[//]: # (See [Configuration Reference]&#40;https://cli.vuejs.org/config/&#41;.)
 
 
-### online preview
+### Online preview
 
 See [swagger2md](https://swagger2md.wangjian.tk/)
