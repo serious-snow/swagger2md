@@ -3,22 +3,26 @@
     <div style="display: flex;flex-direction: row">
       <input style="height: 30px;width: 700px;" type="text" v-model="swaggerUrl" placeholder="输入swagger.json地址"/>
       <button style="margin-left: 10px" @click="getUrl" :disabled="!swaggerUrl">获取swagger</button>
+      <button style="margin-left: 10px" @click="parseFun" :disabled="!inputJs">转换为markdown</button>
+      <div style="margin-left: 10px;height: 30px;display:flex;align-items:center;cursor:pointer;user-select:none">
+        <input type="checkbox" id="input_preview" v-model="preview"/>
+        <label for="input_preview">markdown预览</label>
+      </div>
+
     </div>
     <div style="width: 100%;display: flex;margin-top: 20px">
       <div style="flex:1">
-        <textarea style="width: 100%" rows="30" v-model="inputJs" placeholder="输入swagger内容"></textarea>
+        <textarea style="width: 100%;resize:vertical" rows="30" v-model="inputJs"
+                  placeholder="输入swagger内容"></textarea>
       </div>
       <div style="flex:1">
-        <textarea style="width: 100%" readonly rows="30" v-model="outputJs"></textarea>
+        <textarea style="width:100%;resize:vertical" readonly rows="30" v-model="outputJs"></textarea>
       </div>
     </div>
-    <div style="display: flex;flex-direction: row;margin-top: 10px">
-      <button style="height: 40px" @click="parseFun" :disabled="!inputJs">转换为markdown</button>
-    </div>
-    <div style="width: 100%; display: flex;flex-direction: row;text-align: left">
+    <div style="width: 100%; display: flex;flex-direction: row;text-align: left;margin-top: 10px">
       <!--      <highlightjs autodetect :code="mdHtml"/>-->
       <!--      <Markdown :highlight="hljs" :source="mdHtml" />-->
-      <div class="markdown-body" v-html="mdHtml"></div>
+      <div class="markdown-body" v-if="preview" v-html="mdHtml"></div>
     </div>
 
 
@@ -27,7 +31,7 @@
 
 <script setup>
 
-import {ref} from "vue";
+import {ref, watch} from "vue";
 import {parseSwagger} from "@/utils/swagger";
 import MarkdownIt from "markdown-it";
 import MarkdownItAttrs from 'markdown-it-attrs';
@@ -44,9 +48,11 @@ const setStorageItem = (key, value) => {
 
 const SWAGGER_URL_KEY = "SWAGGER_URL"
 const SWAGGER_INPUT_KEY = "SWAGGER_INPUT"
+const SWAGGER_PREVIEW = "SWAGGER_PREVIEW"
 
 const swaggerUrl = ref(getStorageItem(SWAGGER_URL_KEY))
 const inputJs = ref(getStorageItem(SWAGGER_INPUT_KEY))
+const preview = ref(getStorageItem(SWAGGER_PREVIEW))
 const outputJs = ref("")
 const mdHtml = ref("")
 
@@ -55,9 +61,13 @@ const getUrl = () => {
   fetch(swaggerUrl.value).then(res => res.text()).then(res => {
     inputJs.value = res
   }).catch(e => {
-    outputJs.value = e.toString()
+    outputJs.value = e.stack.toString()
   })
 }
+
+watch(preview, function (current) {
+  setStorageItem(SWAGGER_PREVIEW, current)
+})
 
 const md = new MarkdownIt({
   html: true,
