@@ -22,7 +22,7 @@
     <div style="width: 100%; display: flex;flex-direction: row;text-align: left;margin-top: 10px">
       <!--      <highlightjs autodetect :code="mdHtml"/>-->
       <!--      <Markdown :highlight="hljs" :source="mdHtml" />-->
-      <div class="markdown-body" v-if="preview" v-html="mdHtml"></div>
+      <div class="markdown-body" v-show="preview" v-html="mdHtml"></div>
     </div>
 
 
@@ -43,7 +43,7 @@ const getStorageItem = (key) => {
   return localStorage.getItem(key)
 }
 const setStorageItem = (key, value) => {
-  return localStorage.setItem(key, value)
+   localStorage.setItem(key, value)
 }
 
 const SWAGGER_URL_KEY = "SWAGGER_URL"
@@ -52,7 +52,7 @@ const SWAGGER_PREVIEW = "SWAGGER_PREVIEW"
 
 const swaggerUrl = ref(getStorageItem(SWAGGER_URL_KEY))
 const inputJs = ref(getStorageItem(SWAGGER_INPUT_KEY))
-const preview = ref(getStorageItem(SWAGGER_PREVIEW))
+const preview = ref(JSON.parse(getStorageItem(SWAGGER_PREVIEW)))
 const outputJs = ref("")
 const mdHtml = ref("")
 
@@ -66,7 +66,7 @@ const getUrl = () => {
 }
 
 watch(preview, function (current) {
-  setStorageItem(SWAGGER_PREVIEW, current)
+  setStorageItem(SWAGGER_PREVIEW, JSON.stringify(current))
 })
 
 const md = new MarkdownIt({
